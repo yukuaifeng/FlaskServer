@@ -7,13 +7,13 @@ import os
 
 
 app = Flask(__name__)
-bootstrap = Bootstrap(app)
+
 basedir = os.path.dirname(__file__)
 
 @app.route('/')
 def hello_world():
-    return render_template('test.html')
+    return render_template('Index.html')
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
