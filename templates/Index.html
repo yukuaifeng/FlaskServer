@@ -1,0 +1,137 @@
+{% extends "common/base.html" %}
+
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="text-center">高考志愿填报辅助系统</h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <hr style="filter: alpha(opacity=100,finishopacity=0,style=3)" width="100%" color="#6f5499" size="10" />
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12 ">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h2 class="text-center">输入您的分科和分数或名次获得推荐！</h2>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-10 m-auto">
+                        <form class="form-inline">
+                            <div class="form-group m-3">
+
+                                    <div class="dropdown">
+                                        <a class="btn btn-default dropdown-toggle" role="button" id="kind" data-toggle="dropdown"
+                                                aria-haspopup="true" aria-expanded="false">
+                                            文理科
+                                        </a>
+
+                                        <ul class="dropdown-menu" aria-labelledby="kind">
+                                            <li><a class="dropdown-item" href="#">文科</a> </li>
+                                            <li><a class="dropdown-item" href="#">理科</a> </li>
+                                        </ul>
+                                    </div>
+
+                            </div>
+
+                            <div class="form-group m-3">
+
+                                <label class="sr-only" for="Rank">名次</label>
+                                <div class="input-group">
+                                  <input type="text" class="form-control" id="Rank" placeholder="名次">
+                                  <div class="input-group-addon">名</div>
+                                </div>
+
+                            </div>
+
+                            <div class="form-group m-3">
+                                <label class="sr-only" for="Score">分数</label>
+                                <div class="input-group">
+                                  <input type="text" class="form-control" id="Score" placeholder="分数">
+                                  <div class="input-group-addon">分</div>
+                                </div>
+                            </div>
+                          <button type="submit" class="btn btn-primary m-3">查询</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    <div class="row">
+        <hr style="filter: alpha(opacity=100,finishopacity=0,style=3)" width="100%" color="#6f5499" size="10" />
+    </div>
+
+
+    <ul class="nav nav-list"><li class="divider"></li></ul>
+
+    <div class="row">
+        <div class="col-lg-10 m-auto ">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                学校信息查看
+                            </h4>
+                        </div>
+                        <div class="panel-body">
+                            <p>未设置</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                专业信息查看
+                            </h4>
+                        </div>
+                        <div class="panel-body">
+                            <p>未设置</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                湖南省历年分数线
+                            </h4>
+                        </div>
+                        <div class="panel-body">
+                            <p>未设置</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                各校历年在湘招生计划人数
+                            </h4>
+                        </div>
+                        <div class="panel-body">
+                            <p>未设置</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}
