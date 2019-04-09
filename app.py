@@ -14,6 +14,9 @@ basedir = os.path.dirname(__file__)
 def hello_world():
     return render_template('Index.html')
 
+@app.route('/query', methods=['GET', 'POST'])
+def query():
+    return render_template('display.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
