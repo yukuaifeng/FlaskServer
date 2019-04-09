@@ -1,0 +1,39 @@
+{% extends "common/base.html" %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <table class="table table-striped">
+                    <caption>推荐结果如下</caption>
+                    <thead>
+                    <tr>
+                        <th>推荐院校</th>
+                        <th>推荐程度</th>
+                        <th>录取几率</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th>清华大学</th>
+                        <th>冲</th>
+                        <th>60%</th>
+                    </tr>
+                    <tr>
+                        <th>中南大学</th>
+                        <th>稳</th>
+                        <th>80%</th>
+                    </tr>
+                    <tr>
+                        <th>湖南大学</th>
+                        <th>保</th>
+                        <th>95%</th>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
