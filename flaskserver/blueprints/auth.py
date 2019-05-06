@@ -21,7 +21,7 @@ def login():
         admin = Admin.query.first()
         if admin:
             if username == admin.username and admin.validate_password(password):
-                # logout_user(admin, remember)
+                login_user(admin, remember)
                 flash('Welcome Back.', 'info')
                 return redirect_back()
             flash('Invalid username or password.', 'warning')

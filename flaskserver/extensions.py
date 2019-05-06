@@ -13,7 +13,7 @@ from flask_migrate import Migrate
 bootstrap = Bootstrap()
 db = SQLAlchemy()
 login_manager = LoginManager()
-csrf = CSRFProtect()
+#csrf = CSRFProtect()
 ckeditor = CKEditor()
 mail = Mail()
 moment = Moment()

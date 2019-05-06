@@ -13,7 +13,7 @@ from flask_wtf.csrf import CSRFError
 #from flaskserver.blueprints.admin import admin_bp
 from flaskserver.blueprints.auth import auth_bp
 from flaskserver.blueprints.server import server_bp
-from flaskserver.extensions import bootstrap, db, login_manager, csrf, ckeditor, mail, moment, toolbar, migrate
+from flaskserver.extensions import bootstrap, db, login_manager, ckeditor, mail, moment, toolbar, migrate
 from flaskserver.models import Admin, Admission
 from flaskserver.settings import config
 
@@ -78,7 +78,7 @@ def register_extensions(app):
     bootstrap.init_app(app)
     db.init_app(app)
     login_manager.init_app(app)
-    csrf.init_app(app)
+    #csrf.init_app(app)
     ckeditor.init_app(app)
     mail.init_app(app)
     moment.init_app(app)

@@ -7,8 +7,14 @@ from flaskserver.forms import LoginForm, QueryForm
 from flaskserver.models import Admin,Admission
 from flaskserver.utils import redirect_back
 
-server_bp = Blueprint('blog', __name__)
+server_bp = Blueprint('flaskserver', __name__)
 
 @server_bp.route('/')
 def index():
     return render_template('server/index.html')
+
+@server_bp.route('/query', methods=['GET','POST'])
+def query():
+    queryform = QueryForm()
+    print(queryform.rank, queryform.grade.data)
+    return render_template('server/display.html')

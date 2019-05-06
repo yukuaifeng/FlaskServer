@@ -16,8 +16,8 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Log in')
 
 class QueryForm(FlaskForm):
-    kind = SelectField('Kind', coerce=int ,default=1)
+    kind = SelectField('Kind', coerce=int, default=1)
     rank = IntegerField('Rank', validators=[DataRequired(), Length(1, 10)])
     grade = IntegerField('Grade', validators=[DataRequired(), Length(1, 4)])
-    submit = SubmitField()
+    submit = SubmitField('query')
 

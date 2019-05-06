@@ -22,12 +22,17 @@
 
                     <div class="text-center">
                         <form id="query-form" method="post" action="query">
+                            {{ csrf_token }}
                             <div class="custom-control-inline" >
 
-                                <select id="kind" class="form-control">
+                                <select id="Kind" class="form-control">
                                     <option>文科</option>
                                     <option>理科</option>
                                 </select>
+{#                                <div class="input-group">#}
+{#                                  <input type="text" class="form-control" id="Kind" placeholder="科目">#}
+{#                                  <div class="input-group-addon">科</div>#}
+{#                                </div>#}
 
                             </div>
 
@@ -49,7 +54,10 @@
                                 </div>
                             </div>
 
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
                             <div class="custom-control-inline">
+
                                 <button type="submit" class="btn btn-primary m-3">查询</button>
                             </div>
                         </form>
