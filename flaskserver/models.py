@@ -9,6 +9,7 @@ from flaskserver.extensions import db
 
 #用户信息表
 class Admin(db.Model, UserMixin):
+    __tablename__ = 'admin'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20))
     password_hash = db.Column(db.String(128))
@@ -17,10 +18,15 @@ class Admin(db.Model, UserMixin):
         self.password_hash = generate_password_hash(password)
 
     def validate_password(self, password):
-        return check_password_hash(self.password_hash, password)
+        #return check_password_hash(self.password_hash, password)
+        check = False
+        if (password == self.password_hash):
+            check = True
+        return check
 
 #院校录取名次表
 class Admission(db.Model):
+    __tablename__ = 'grade_line'
     id = db.Column(db.Integer, primary_key=True)
     school = db.Column(db.String(50))
     rank = db.Column(db.Integer)

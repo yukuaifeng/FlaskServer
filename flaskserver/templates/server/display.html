@@ -17,21 +17,27 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <th>清华大学</th>
-                        <th>冲</th>
-                        <th>60%</th>
-                    </tr>
-                    <tr>
-                        <th>中南大学</th>
-                        <th>稳</th>
-                        <th>80%</th>
-                    </tr>
-                    <tr>
-                        <th>湖南大学</th>
-                        <th>保</th>
-                        <th>95%</th>
-                    </tr>
+                    {% for i in riskly_results %}
+                        <tr>
+                            <td>{{ i }}</td>
+                            <td>冲</td>
+                            <td>20%</td>
+                        </tr>
+                    {% endfor %}
+                    {% for i in surely_results %}
+                        <tr>
+                            <td>{{ i }}</td>
+                            <td>稳</td>
+                            <td>60%</td>
+                        </tr>
+                    {% endfor %}
+                    {% for i in definite_results %}
+                        <tr>
+                            <td>{{ i }}</td>
+                            <td>保</td>
+                            <td>100%</td>
+                        </tr>
+                    {% endfor %}
                     </tbody>
                 </table>
             </div>
