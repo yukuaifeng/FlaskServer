@@ -5,7 +5,7 @@ import sys
 import pymysql
 
 basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-baseurl = "mysql+pymysql://root:123456@127.0.0.1:3306/evolution"
+baseurl = "mysql+pymysql://root:950305@127.0.0.1:3306/evolution"
 
 # SQLite URI compatible
 WIN = sys.platform.startswith('win')
