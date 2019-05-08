@@ -12,6 +12,7 @@ from flaskserver.models import Admin
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(1, 20)])
     password = PasswordField('Password', validators=[DataRequired(), Length(1, 128)])
+    verify_code = StringField('VerifyCode', validators=[DataRequired()])
     remember = BooleanField('Remember me')
     submit = SubmitField('Log in')
 

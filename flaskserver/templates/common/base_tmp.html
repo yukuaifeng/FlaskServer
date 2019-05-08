@@ -20,56 +20,33 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
 {#            <a class="navbar-brand" href="{{ url_for('index') }}">{{ admin.blog_title }}</a>#}
-            <a class="navbar-brand" >高考志愿填报系统</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
-                    aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarColor01">
-{#                <ul class="navbar-nav mr-auto">#}
-{#                    {{ render_nav_item('blog.index', 'Home') }}#}
-{#                    {{ render_nav_item('blog.about', 'About') }}#}
-{#                </ul>#}
+            <ul class="collapse nav navbar-collapse">
+                <a class="navbar-brand" href="{{ url_for('server.index') }}">高考志愿填报系统</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+                        aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </ul>
 
-                <ul class="nav navbar-nav navbar-right">
-                    {% if current_user.is_authenticated %}
-                        <li class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
-                               aria-haspopup="true"
-                               aria-expanded="false">
-                                New <span class="caret"></span>
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-{#                                <a class="dropdown-item" href="{{ url_for('admin.new_post') }}">Post</a>#}
-{#                                <a class="dropdown-item" href="{{ url_for('admin.new_category') }}">Category</a>#}
-{#                                <a class="dropdown-item" href="{{ url_for('admin.new_link') }}">Link</a>#}
-                                <a class="dropdown-item" >Post</a>
-                                <a class="dropdown-item" >Category</a>
-                                <a class="dropdown-item" >Link</a>
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
-                               aria-haspopup="true"
-                               aria-expanded="false">
-                                Manage <span class="caret"></span>
-                                {% if unread_comments %}
-                                    <span class="badge badge-success">new</span>
-                                {% endif %}
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" >Post</a>
-                                <a class="dropdown-item" >Category</a>
-                                <a class="dropdown-item" >
-                                    Comment
-                                </a>
-                                <a class="dropdown-item" >Link</a>
-                            </div>
-                        </li>
-{#                        {{ render_nav_item('admin.settings', 'Settings') }}#}
-                    {% endif %}
-                </ul>
-            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
+                       aria-haspopup="true"
+                       aria-expanded="false">
+                        <img src="/static/pic/高校.png" height="32" width="32">
+                        <span class="caret"></span>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        {% if current_user.is_authenticated %}
+                            <a class="dropdown-item" href="{{ url_for('auth.logout', next=request.full_path) }}">Logout</a>
+                            <a class="dropdown-item" >Info</a>
+                        {% else %}
+                            <a class="dropdown-item" href="{{ url_for('auth.login', next=request.full_path) }}">Login</a>
+                        {% endif %}
+                    </div>
+                </li>
+            </ul>
+
         </div>
     </nav>
 {% endblock nav %}
