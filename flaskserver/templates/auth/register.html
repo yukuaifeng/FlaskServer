@@ -1,10 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends '/common/base_tmp.html' %}
+{% from 'bootstrap/form.html' import render_form %}
 
-</body>
-</html>
+{% block title %}Register{% endblock %}
+
+{% block content %}
+    <div class="jumbotron">
+        <div class="row">
+            <div class="col-md-8">
+                <img src="{{ url_for('static', filename='pic/register.jpg') }}" class="rounded img-fluid">
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-3 w-100 bg-light">
+                    <div class="card-header"><h4>欢迎使用高考志愿填报系统!</h4></div>
+                    <div class="card-body">
+                        {{ render_form(form) }}
+                        <img class="verify_code" src="/auth/code " onclick="this.src='/auth/code?'+ Math.random()">
+                        <hr>
+                        <small>已有账户? <a href="{{ url_for('.login') }}">登录</a>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

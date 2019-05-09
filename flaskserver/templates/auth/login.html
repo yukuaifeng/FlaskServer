@@ -12,6 +12,7 @@
         <div class="row h-100 justify-content-center align-items-center">
             {{ render_form(form, extra_classes='col-6') }}
             <img class="verify_code" src="/auth/code " onclick="this.src='/auth/code?'+ Math.random()">
+            <small>新用户注册 <a href="{{ url_for('.register') }}">注册</a></small>
         </div>
     </div>
 {% endblock %}

@@ -14,7 +14,7 @@ from flask_wtf.csrf import CSRFError
 from flaskserver.blueprints.auth import auth_bp
 from flaskserver.blueprints.server import server_bp
 from flaskserver.extensions import bootstrap, db, login_manager, ckeditor, mail, moment, toolbar, migrate
-from flaskserver.models import Admin, Admission
+from flaskserver.models import User, Admission
 from flaskserver.settings import config
 
 
@@ -102,7 +102,7 @@ def register_shell_context(app):
 def register_template_context(app):
     @app.context_processor
     def make_template_context():
-        admin = Admin.query.first()
+        admin = User.query.first()
         # if current_user.is_authenticated:
         #     unread_comments = Comment.query.filter_by(reviewed=False).count()
         # else:
@@ -161,14 +161,14 @@ def register_commands(app):
         )
         db.session.add(admission)
 
-        admin = Admin.query.first()
+        admin = User.query.first()
         if admin is not None:
             click.echo('The administrator already exists, updating...')
             admin.username = username
             admin.set_password(password)
         else:
             click.echo('Creating the temporary administrator account...')
-            admin = Admin(
+            admin = User(
                 username='admin'
             )
             admin.set_password(password)

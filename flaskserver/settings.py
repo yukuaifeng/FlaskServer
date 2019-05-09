@@ -26,12 +26,13 @@ class BaseConfig(object):
     CKEDITOR_ENABLE_CSRF = True
     CKEDITOR_FILE_UPLOADER = 'admin.upload_image'
 
-    # MAIL_SERVER = os.getenv('MAIL_SERVER')
-    # MAIL_PORT = 465
-    # MAIL_USE_SSL = True
-    # MAIL_USERNAME = os.getenv('MAIL_USERNAME')
-    # MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
-    # MAIL_DEFAULT_SENDER = ('Bluelog Admin', MAIL_USERNAME)
+    MAIL_SERVER = os.getenv('smtp.sendgrid.net')
+    MAIL_SUBJECT_PREFIX = '[Evolution]'
+    MAIL_PORT = 587
+    MAIL_USE_SSL = True
+    MAIL_USERNAME = 'apikey'
+    MAIL_PASSWORD = os.getenv('SENDGRID_API_KEY')
+    MAIL_DEFAULT_SENDER = ('yukuaifeng', os.getenv('MAIL_PASSWORD'))
     #
     # BLUELOG_EMAIL = os.getenv('BLUELOG_EMAIL')
     # BLUELOG_POST_PER_PAGE = 10
@@ -67,3 +68,8 @@ config = {
     'testing': TestingConfig,
     'production': ProductionConfig
 }
+
+class Operations:
+    CONFIRM = 'confirm'
+    RESET_PASSWORD = 'reset-password'
+    CHANGE_EMAIL = 'change-email'

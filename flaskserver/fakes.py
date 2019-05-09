@@ -6,12 +6,12 @@ from faker import Faker
 from sqlalchemy.exc import IntegrityError
 
 from flaskserver import db
-from flaskserver.models import Admin,Admission
+from flaskserver.models import User, Admission
 
 fake = Faker()
 
 def fake_admin():
-    admin = Admin(
+    admin = User(
         username='admin'
     )
     admin.set_password('admin')

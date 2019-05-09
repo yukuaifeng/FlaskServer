@@ -23,8 +23,8 @@ migrate = Migrate()
 
 @login_manager.user_loader
 def load_user(user_id):
-    from flaskserver.models import Admin
-    user = Admin.query.get(int(user_id))
+    from flaskserver.models import User
+    user = User.query.get(int(user_id))
     return user
 
 login_manager.login_view = "auth.login"

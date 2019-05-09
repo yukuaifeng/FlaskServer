@@ -4,7 +4,7 @@ from flask_login import current_user
 #from flaskserver.emails import send_new_comment_email, send_new_reply_email
 from flaskserver.extensions import db
 from flaskserver.forms import LoginForm, QueryForm
-from flaskserver.models import Admin,Admission
+from flaskserver.models import User,Admission
 from flaskserver.utils import redirect_back
 from sqlalchemy import text
 import pysnooper
