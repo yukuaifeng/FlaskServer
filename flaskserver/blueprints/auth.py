@@ -7,7 +7,7 @@ from flaskserver.utils import redirect_back, generate_token, validate_token
 from flaskserver.verify_code import get_verify_code
 from flaskserver.extensions import db
 from flaskserver.settings import Operations
-from flaskserver.emails import send_confirm_email
+from flaskserver.emails import send_confirm_email, send_mail
 
 
 from io import BytesIO
@@ -79,8 +79,9 @@ def register():
         user = User(email=email, username=username)
         user.set_password(password)
         token = generate_token(user=user, operation=Operations.CONFIRM)
-        send_confirm_email(user=user, token=token)
+        #send_confirm_email(user=user, token=token)
         flash('已发送确认邮件到您的注册邮箱，请您注意查收', 'info')
+        send_mail('Success!', email, 'Hello, This is test mail!')
         db.session.add(user)
         db.session.commit()
         return redirect(url_for('.login'))

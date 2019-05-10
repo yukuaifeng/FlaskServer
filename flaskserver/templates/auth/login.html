@@ -1,5 +1,6 @@
 {% extends 'common/base_tmp.html' %}
 {% from 'bootstrap/form.html' import render_form %}
+{#{% import "bootstrap/wtf.html" as wtf %}#}
 
 
 {% block title %}Login{% endblock %}
@@ -10,9 +11,25 @@
             <h1>Log in</h1>
         </div>
         <div class="row h-100 justify-content-center align-items-center">
-            {{ render_form(form, extra_classes='col-6') }}
-            <img class="verify_code" src="/auth/code " onclick="this.src='/auth/code?'+ Math.random()">
-            <small>新用户注册 <a href="{{ url_for('.register') }}">注册</a></small>
+{#            {{ render_form(form, extra_classes='col-6') }}#}
+            <form method="post">
+                {{ form.csrf_token }}
+                <div class="form-group">
+                    {{ form.username.label }}
+                    {{ form.username(class='form-control') }}
+                </div>
+                <div class="form-group">
+                    {{ form.password.label }}
+                    {{ form.password(class='form-control') }}
+                </div>
+                <div class="form-group">
+                    {{ form.verify_code.label }}
+                    {{ form.verify_code(class='form-control') }}
+                </div>
+                {{ form.submit(class='btn btn-primary') }}
+                <img class="verify_code" src="/auth/code " onclick="this.src='/auth/code?'+ Math.random()">
+                <small>新用户注册 <a href="{{ url_for('.register') }}">注册</a></small>
+            </form>
         </div>
     </div>
 {% endblock %}

@@ -26,13 +26,14 @@ class BaseConfig(object):
     CKEDITOR_ENABLE_CSRF = True
     CKEDITOR_FILE_UPLOADER = 'admin.upload_image'
 
-    MAIL_SERVER = os.getenv('smtp.sendgrid.net')
-    MAIL_SUBJECT_PREFIX = '[Evolution]'
+    MAIL_SERVER = 'smtp.sendgrid.net'
     MAIL_PORT = 587
-    MAIL_USE_SSL = True
+    #MAIL_USE_SSL = True
+    MAIL_USE_TLS = True
     MAIL_USERNAME = 'apikey'
     MAIL_PASSWORD = os.getenv('SENDGRID_API_KEY')
     MAIL_DEFAULT_SENDER = ('yukuaifeng', os.getenv('MAIL_PASSWORD'))
+    SECURITY_EMAIL_SENDER = 'valid_email@my_domain.com'
     #
     # BLUELOG_EMAIL = os.getenv('BLUELOG_EMAIL')
     # BLUELOG_POST_PER_PAGE = 10
