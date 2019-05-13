@@ -19,7 +19,7 @@ class LoginForm(FlaskForm):
 
 #查询用表格
 class QueryForm(FlaskForm):
-    kind = SelectField('分科', choices=((1, '理'), (2, '文'),))
+    kind = SelectField('分科', choices=((1, '理科'), (2, '文科'),))
     rank = IntegerField('排名', validators=[DataRequired()])
     grade = IntegerField('成绩', validators=[DataRequired()])
     submit = SubmitField('查询')

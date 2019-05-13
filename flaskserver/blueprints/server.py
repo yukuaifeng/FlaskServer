@@ -8,6 +8,7 @@ from flaskserver.models import User,Admission
 from flaskserver.utils import redirect_back
 from sqlalchemy import text
 import pysnooper
+import math
 
 server_bp = Blueprint('server', __name__)
 
@@ -21,7 +22,7 @@ def display(riskly_results):
     return render_template('server/display.html', riskly_results=riskly_results)
 
 @server_bp.route('/query', methods=['GET','POST'])
-#@pysnooper.snoop()
+@pysnooper.snoop()
 def query():
     queryform = QueryForm()
     if request.method == 'POST':
@@ -35,7 +36,11 @@ def query():
         # for result in testresults:
         #     print(result)
 
-        results = Admission.query.filter(Admission.kind == '理科', Admission.rank > rank)\
+        kind_tmp = "理科"
+        if kind == '2':
+            kind_tmp = "文科"
+
+        results = Admission.query.filter(Admission.kind == kind_tmp, Admission.rank > rank)\
             .group_by(Admission.school).order_by(Admission.rank).limit(50)
 
         riskly_results, surely_results, definite_results = choose_school(results, rank)
@@ -48,17 +53,19 @@ def query():
 
 #@pysnooper.snoop()
 def compute(ranks, rank, variance):
+    #把这个学校里的所有的录取名次和查询的名次进行求平方差再取均值
+    #这里是采用范数，p=2
     tmp = 0.0
     for r in ranks:
         for i in r:
             tmp += (i-rank)**2
-        tmp = tmp/5
+        tmp = math.sqrt(tmp)/len(r)
         variance.append(tmp)
     return variance
 
 
 
-#@pysnooper.snoop()
+@pysnooper.snoop()
 def choose_school(results, rank):
     #先把找出来的所有学校拿出来放在一起
     #再新建五个数组，按年份个数，放置录取名次大于输入名次的学校
