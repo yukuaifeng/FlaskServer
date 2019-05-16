@@ -4,11 +4,12 @@ from flask_login import current_user
 #from flaskserver.emails import send_new_comment_email, send_new_reply_email
 from flaskserver.extensions import db
 from flaskserver.forms import LoginForm, QueryForm
-from flaskserver.models import User,Admission
+from flaskserver.models import User,Admission,GradeLine,ControlLine,StudentNumber
 from flaskserver.utils import redirect_back
-from sqlalchemy import text
+from sqlalchemy import text, and_
 import pysnooper
 import math
+import numpy as np
 
 server_bp = Blueprint('server', __name__)
 
@@ -22,7 +23,7 @@ def display(riskly_results):
     return render_template('server/display.html', riskly_results=riskly_results)
 
 @server_bp.route('/query', methods=['GET','POST'])
-@pysnooper.snoop()
+#@pysnooper.snoop()
 def query():
     queryform = QueryForm()
     if request.method == 'POST':
@@ -36,14 +37,14 @@ def query():
         # for result in testresults:
         #     print(result)
 
-        kind_tmp = "理科"
+        kind_tmp = "理工类"
         if kind == '2':
-            kind_tmp = "文科"
+            kind_tmp = "文史类"
 
-        results = Admission.query.filter(Admission.kind == kind_tmp, Admission.rank > rank)\
-            .group_by(Admission.school).order_by(Admission.rank).limit(50)
+        results = GradeLine.query.filter(GradeLine.kind == kind_tmp, GradeLine.rank > rank)\
+            .group_by(GradeLine.school).order_by(GradeLine.rank).limit(30)
 
-        riskly_results, surely_results, definite_results = choose_school(results, rank)
+        riskly_results, surely_results, definite_results = choose_school(results, rank, kind_tmp)
         print(riskly_results, surely_results, definite_results)
 
         #return redirect(url_for(".display", riskly_results=riskly_results))
@@ -52,105 +53,196 @@ def query():
     return render_template('server/index.html', form=queryform)
 
 #@pysnooper.snoop()
-def compute(ranks, rank, variance):
+def compute_distance(ranks, rank):
     #把这个学校里的所有的录取名次和查询的名次进行求平方差再取均值
     #这里是采用范数，p=2
     tmp = 0.0
     for r in ranks:
-        for i in r:
-            tmp += (i-rank)**2
-        tmp = math.sqrt(tmp)/len(r)
-        variance.append(tmp)
+        tmp += ((r-rank)/rank)**2
+    distance = math.sqrt(tmp)/len(ranks)
+    #distance = tmp/rank
+    return distance
+
+#@pysnooper.snoop()
+def compute_variance(ranks, targets):
+    #这里是要求所有的与高考的距离或者是与省控线的rank值的标准方差
+    listtmp = [ranks[i] - targets[i] for i in range(len(ranks))]
+    listtmp = [listtmp[i]/sum(listtmp) for i in range(len(listtmp))]
+    if len(listtmp) == 1:
+        variance = 1
+    else:
+        variance = np.std(listtmp, ddof=1)
+#    print(variance)
     return variance
 
 
-
-@pysnooper.snoop()
-def choose_school(results, rank):
-    #先把找出来的所有学校拿出来放在一起
-    #再新建五个数组，按年份个数，放置录取名次大于输入名次的学校
-    #循环查询每个学校，按学校查询出所有的录取名次，找出大于目标名次的个数
-    #将对应的学校的所有录取名次也要放在一个list里面，二维list
-    #再新建五个list，将对应分组里的学校里的录取名次与目标名次的标准差求方差和
-    #按照方差和从小到大进行排序，拿出相应的学校
-    all_school = []
-    count_1, count_2, count_3, count_4, count_5 = ([] for i in range(5))
-    ranks_1, ranks_2, ranks_3, ranks_4, ranks_5 = ([] for i in range(5))
-    variance_1, variance_2, variance_3, variance_4, variance_5 = ([] for i in range(5))
-    riskly_results, surely_results, definite_results = ([] for i in range(3))
+#@pysnooper.snoop()
+def choose_school(results, rank, kind):
+    #首先，循环得到的results，也就是里面的学校
+    #循环体中，也就是每一个学校内，首先查询它的每一年的数据，存储在form中
+    #然后进行四次运算：
+    #首先是达到要求的年份占比计算
+    #再就是计算五年内数据与目标rank的距离
+    #然后就是五年内数据与高考人数、省控线距离的rank值
+    schools = []
+    rates = []
+    clazzs = []
+    riskly_results = []
+    surely_results = []
+    definite_results = []
     for result in results:
-        all_school.append(result.school)
-        single_school = Admission.query.filter(Admission.school == result.school, Admission.kind == '理科').all()
+        schools.append(result.school)
+
+    for school in schools:
+        #首先通过学校的名称和满足rank的排名来获取学习的编号和批次
+        #这里是因为有些学校的编号一致而批次不一样或者是学校名称一样但是录取的分数线同一年有多个
+        schooltmp = GradeLine.query.filter(GradeLine.school == school, GradeLine.rank > rank).first()
+        schoolnum = schooltmp.number
+        schoolclazz = schooltmp.clazz
+        #将所有的批次存入list中，之后存入字典里，方便查取
+        clazzs.append(schoolclazz)
+
+        #然后根据学校的编号和年份、分科和批次来查去相应地名次
+        schoolForm = GradeLine.query.filter(and_(GradeLine.number == schoolnum, 2014 <= GradeLine.year,
+                     GradeLine.year <= 2018, GradeLine.kind == kind, GradeLine.clazz == schoolclazz)).all()
+        ranks = []
+        years = []
         i = 0
-        ranks_tmp = []
-        for s in single_school:
-            ranks_tmp.append(s.rank)
+        #存储该学校历年的录取排名，获得占比
+        for s in schoolForm:
+            ranks.append(s.rank)
+            years.append(s.year)
             if s.rank > rank:
                 i += 1
 
-        if i == 1:
-            count_1.append(result.school)
-            ranks_1.append(ranks_tmp)
-        elif i == 2:
-            count_2.append(result.school)
-            ranks_2.append(ranks_tmp)
-        elif i == 3:
-            count_3.append(result.school)
-            ranks_3.append(ranks_tmp)
-        elif i == 4:
-            count_4.append(result.school)
-            ranks_4.append(ranks_tmp)
-        elif i == 5:
-            count_5.append(result.school)
-            ranks_5.append(ranks_tmp)
+        #计算学校的历年排名与目标排名的距离
+        distance = compute_distance(ranks, rank)
+        number = i/len(schoolForm)
 
-    #计算不同分组内的每一个学校历年的录取名次和目标名次的差距的均方差
-    variance_1 = compute(ranks_1, rank, variance_1)
-    variance_2 = compute(ranks_2, rank, variance_2)
-    variance_3 = compute(ranks_3, rank, variance_3)
-    variance_4 = compute(ranks_4, rank, variance_4)
-    variance_5 = compute(ranks_5, rank, variance_5)
+        stuNums = []
+        ctrlRanks = []
+
+        #通过年份来查询相应年份的对应的高考人数和省控线的排位
+        #这里是因为不是每个学校的每一年数据都是完整的
+        for year in years:
+            Num = StudentNumber.query.filter(StudentNumber.year == year).first()
+            stuNums.append(Num.stu_num)
+
+            schoolrank = GradeLine.query.filter(and_(GradeLine.number == schoolnum, GradeLine.year == year,
+                                                     GradeLine.kind == kind, GradeLine.clazz == schoolclazz)).first()
+            schoolrank = schoolrank.rank
+            ctrlrank = ControlLine.query.filter(and_(ControlLine.year == year, ControlLine.kind == kind,
+                                                     ControlLine.ctrl_rank > schoolrank)).first()
+            ctrlRanks.append(ctrlrank.ctrl_rank)
+
+        #进行计算
+        numVariance = compute_variance(ranks, stuNums)
+        rankVariance = compute_variance(ranks, ctrlRanks)
+
+        #如果学校的录取排名与目标排名差距过大，是因为目标名次数值太小，所以差距越小应该取值越小
+        #但是要归一化到0-1的范围之中
+        if distance > 1:
+            distance = distance / (distance + 1)
+
+        #这里是归一化均方差值
+        #如果均方差过大，也是数值越小应该越好，归一化的值也应该越小
+        if numVariance > 1:
+            numVariance = numVariance / (numVariance + 1)
+
+        if rankVariance > 1:
+            rankVariance = rankVariance / (numVariance + 1)
+
+        print(school)
+        print(distance, number, numVariance, rankVariance)
+
+        #然后将四个数据按照一定的比例将其计算出推荐的概率
+        #因为占比肯定是最重要的，占比为78%
+        #再就是与目标rank值之间的距离，占比为12%
+        #其余的两项指标各占5%
+
+        rate = (1-distance)*0.12 + number*0.78 + (1-numVariance)*0.05 + (1-rankVariance)*0.05
+
+        rate = '%.2f%%' % (rate * 100)
+        rates.append(rate)
+
+    print(rates)
+    clazzDict = dict(zip(schools, clazzs))
+    schoolDict = dict(zip(schools, rates))
 
 
-    #将学校名称和学校的均方差联系起来，组成字典
-    dict_1 = dict(zip(count_1, variance_1))
-    dict_2 = dict(zip(count_2, variance_2))
-    dict_3 = dict(zip(count_3, variance_3))
-    dict_4 = dict(zip(count_4, variance_4))
-    dict_5 = dict(zip(count_5, variance_5))
+    #这里按照推荐概率对得到的结果进行分组
+    riskly_dict = {k: v for k, v in schoolDict.items() if v < "60%"}
+    surely_dict = {k: v for k, v in schoolDict.items() if "60%" < v < "90%"}
+    definite_dict = {k: v for k, v in schoolDict.items() if v > "90%"}
 
-    #将只有1,2两个组合在一起，用来筛选冲的这些选项，只有3,4两个组合在一起，用来筛选稳的这些选项
-    dict_risk = dict(dict_1, **dict_2)
-    dict_sure = dict(dict_3, **dict_4)
+    #然后对分组后的结果进行组内排序
+    riskly_dict = sorted(riskly_dict.items(), key=lambda x: x[1], reverse=True)
+    surely_dict = sorted(surely_dict.items(), key=lambda x: x[1], reverse=True)
+    definite_dict = sorted(definite_dict.items(), key=lambda x: x[1], reverse=True)
 
-    #将三个字典按照value，也就是均方差的值进行排序
-    sorted(dict_risk.items(), key=lambda item: item[1])
-    sorted(dict_sure.items(), key=lambda item: item[1])
-    sorted(dict_5.items(), key=lambda item: item[1])
+    #加入录取批次，加入到相应地组内，与学校对应起来
+    for i in range(0, len(riskly_dict)):
+        riskly_dict[i] = riskly_dict[i] + (clazzDict[riskly_dict[i][0]],)
 
-    #下面就是选出需要的个数
-    i = 0
-    j = 0
-    k = 0
-    for key in dict_risk:
-        if i > 2:
-            break
-        riskly_results.append(key)
-        i += 1
+    for i in range(0, len(surely_dict)):
+        surely_dict[i] = surely_dict[i] + (clazzDict[surely_dict[i][0]],)
 
-    for key in dict_sure:
-        if j > 2:
-            break
-        surely_results.append(key)
-        j += 1
+    for i in range(0, len(definite_dict)):
+        definite_dict[i] = definite_dict[i] + (clazzDict[definite_dict[i][0]],)
 
-    for key in dict_5:
-        if k > 3:
-            break
-        definite_results.append(key)
-        k += 1
+    print(riskly_dict)
+
+    #如果数目不够，就去找上面那个去借，再删除掉,避免重复
+    #这里的情况是因为考虑到需要借的情况多是名次比较高的情况
+    #所以将最接近目标的target的值借到上一个等级
+
+    if len(riskly_dict) < 3:
+        for i in range(0, 3-len(riskly_dict)):
+            riskly_dict.append(surely_dict[i])
+            del surely_dict[i]
+
+    if len(surely_dict) < 3:
+        for i in range(0, 3-len(surely_dict)):
+            surely_dict.append(definite_dict[i])
+            del definite_dict[i]
+
+    #取出所需要的三项分类个数，这里的个数也是可以设置的
+    for i in range(0, 3):
+        riskly_results.append(riskly_dict[i])
+
+    for i in range(0, 3):
+        surely_results.append(surely_dict[i])
+
+    for i in range(0, 4):
+        definite_results.append(definite_dict[i])
+
+    # j = 0
+    # for key in surely_dict:
+    #     if j < 3:
+    #         surely_results[key] = '%.2f%%' % (surely_dict[key] * 100)
+    #         j += 1
+    #     else:
+    #         break
+    #
+    # n = 0
+    # for key in definite_dict:
+    #     if n < 4:
+    #         definite_results[key] = '%.2f%%' % (definite_dict[key] * 100)
+    #         n += 1
+    #     else:
+    #         break
 
     return riskly_results, surely_results, definite_results
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -12,30 +12,34 @@
                     <thead>
                     <tr>
                         <th>推荐院校</th>
+                        <th>录取批次</th>
+                        <th>推荐策略</th>
                         <th>推荐程度</th>
-                        <th>录取几率</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {% for i in riskly_results %}
+                    {% for key in riskly_results %}
                         <tr>
-                            <td>{{ i }}</td>
+                            <td>{{ key[0] }}</td>
+                            <td>{{ key[2] }}</td>
                             <td>冲</td>
-                            <td>20%</td>
+                            <td>{{ key[1] }}</td>
                         </tr>
                     {% endfor %}
-                    {% for i in surely_results %}
+                    {% for key in surely_results %}
                         <tr>
-                            <td>{{ i }}</td>
+                            <td>{{ key[0] }}</td>
+                            <td>{{ key[2] }}</td>
                             <td>稳</td>
-                            <td>60%</td>
+                            <td>{{ key[1] }}</td>
                         </tr>
                     {% endfor %}
-                    {% for i in definite_results %}
+                    {% for key in definite_results %}
                         <tr>
-                            <td>{{ i }}</td>
+                            <td>{{ key[0] }}</td>
+                            <td>{{ key[2] }}</td>
                             <td>保</td>
-                            <td>100%</td>
+                            <td>{{ key[1] }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>

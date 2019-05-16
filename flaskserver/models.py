@@ -42,3 +42,36 @@ class Admission(db.Model):
     grade = db.Column(db.Integer)
     clazz = db.Column(db.String(8))
 
+#新的所有数据的表格
+class GradeLine(db.Model):
+    __tablename__ = 'grade_all'
+    id = db.Column(db.Integer, primary_key=True)
+    kind = db.Column(db.String(10))
+    number = db.Column(db.Integer)
+    school = db.Column(db.String(50))
+    figure = db.Column(db.Integer)
+    grade = db.Column(db.Integer)
+    chinese = db.Column(db.Float)
+    math = db.Column(db.Float)
+    english = db.Column(db.Float)
+    year = db.Column(db.Integer)
+    rank = db.Column(db.Integer)
+    clazz = db.Column(db.String(10))
+
+#历年高考省控线及其排名
+class ControlLine(db.Model):
+    __tablename__ = 'control_line'
+    id = db.Column(db.Integer, primary_key=True)
+    year = db.Column(db.Integer)
+    kind = db.Column(db.String(10))
+    clazz = db.Column(db.String(10))
+    ctrl_line = db.Column(db.Integer)
+    ctrl_rank = db.Column(db.Integer)
+
+#历年参加高考人数表
+class StudentNumber(db.Model):
+    __tablename__ = 'student_number'
+    id = db.Column(db.Integer, primary_key=True)
+    year = db.Column(db.Integer)
+    stu_num = db.Column(db.Integer)
+
