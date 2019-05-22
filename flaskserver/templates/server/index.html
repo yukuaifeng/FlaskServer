@@ -1,11 +1,15 @@
 {% extends "common/base_tmp.html" %}
 {% from 'bootstrap/form.html' import render_form %}
+{% import 'bootstrap/wtf.html' as wtf %}
 
 {% block content %}
     <div class="container">
         <div class="jumbotron">
             <h1>高考志愿填报辅助系统</h1>
-            <p>为湖南考生服务，输入您的分科和高考分数或者名次，即可获得填报志愿推荐</p>
+            <h2>为湖南考生服务，输入您的分科和高考名次，即可获得填报志愿推荐</h2>
+            <p>根据可能录取的概率以及填报的策略，将分为三种推荐结果:</p>
+            <p>冲、稳、保</p>
+            <p>在尽可能利用分数的情况下录取概率由低到高</p>
         </div>
 
         <div class="row">
@@ -48,18 +52,34 @@
 {#                            </div>#}
 
 
-                                 {{ form.kind.label }}
-                                 {{ form.kind(class='from-contorl') }}
+                            <p>
+                                {{ form.kind.label }}
+                                {{ form.kind(class='from-contorl') }}
 
 
-                                 {{ form.rank.label }}
-                                 {{ form.rank(class='from-contorl') }}
+                                {{ form.rank.label }}
+                                {{ form.rank(class='from-contorl') }}
 
 
-                                 {{ form.grade.label }}
-                                 {{ form.grade(class='from-contorl') }}
+                                {{ form.grade.label }}
+                                {{ form.grade(class='from-contorl') }}
+                            </p>
 
-                                 {{ form.submit(class='btn btn-primary') }}
+                            <a>您可以选择各个推荐方案的占比</a>
+
+                            <p>
+
+                                {{ form.risk_num.label }}
+                                {{ form.risk_num(class='from-contorl', value = 3) }}
+
+                                {{ form.sure_num.label }}
+                                {{ form.sure_num(class='from-contorl', value = 3) }}
+
+                                {{ form.def_num.label }}
+                                {{ form.def_num(class='from-contorl', value = 4) }}
+
+                                {{ form.submit(class='btn btn-primary') }}
+                            </p>
 
 {#                            <div class="custom-control-inline">#}
 {#                                <label class="sr-only" for="Score">分数</label>#}

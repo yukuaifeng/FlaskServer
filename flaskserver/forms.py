@@ -17,12 +17,22 @@ class LoginForm(FlaskForm):
     remember = BooleanField('Remember me')
     submit = SubmitField('Log in')
 
+def check_num(form, field):
+    if field.data > 10:
+        raise ValidationError('数目不得大于10')
+
 #查询用表格
 class QueryForm(FlaskForm):
     kind = SelectField('分科', choices=((1, '理科'), (2, '文科'),))
     rank = IntegerField('排名', validators=[DataRequired()])
     grade = IntegerField('成绩', validators=[DataRequired()])
+    risk_num = IntegerField('冲的数目', validators=[check_num])
+    sure_num = IntegerField('稳的数目', validators=[check_num])
+    def_num = IntegerField('保的数目', validators=[check_num])
     submit = SubmitField('查询')
+
+
+
 
 #注册用表格
 class RegisterForm(FlaskForm):
