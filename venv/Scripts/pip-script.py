@@ -1,4 +1,4 @@
-#!"F:\研究生二年级\高考志愿系统\Server\Flask Server\venv\Scripts\python.exe" -x
+#!D:\Evaluation\venv\Scripts\python.exe
 # EASY-INSTALL-ENTRY-SCRIPT: 'pip==10.0.1','console_scripts','pip'
 __requires__ = 'pip==10.0.1'
 import re

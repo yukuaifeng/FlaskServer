@@ -1,4 +1,4 @@
-#!"F:\研究生二年级\高考志愿系统\Server\Flask Server\venv\Scripts\python.exe" -x
+#!D:\Evaluation\venv\Scripts\python.exe
 # EASY-INSTALL-ENTRY-SCRIPT: 'setuptools==39.1.0','console_scripts','easy_install'
 __requires__ = 'setuptools==39.1.0'
 import re

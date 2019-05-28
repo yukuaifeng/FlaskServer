@@ -11,7 +11,7 @@ from sqlalchemy import text, and_
 import pysnooper
 
 #@pysnooper.snoop()
-def choose_school(results, rank, kind, risk_num = 3, sure_num = 3, def_num = 4):
+def choose_school(results, rank, kind, risk_num, sure_num, def_num):
     #首先，循环得到的results，也就是里面的学校
     #循环体中，也就是每一个学校内，首先查询它的每一年的数据，存储在form中
     #然后进行四次运算：
@@ -114,16 +114,6 @@ def choose_school(results, rank, kind, risk_num = 3, sure_num = 3, def_num = 4):
     surely_dict = sorted(surely_dict.items(), key=lambda x: x[1], reverse=True)
     definite_dict = sorted(definite_dict.items(), key=lambda x: x[1], reverse=True)
 
-    #加入录取批次，加入到相应地组内，与学校对应起来
-    for i in range(0, len(riskly_dict)):
-        riskly_dict[i] = riskly_dict[i] + (clazzDict[riskly_dict[i][0]],)
-
-    for i in range(0, len(surely_dict)):
-        surely_dict[i] = surely_dict[i] + (clazzDict[surely_dict[i][0]],)
-
-    for i in range(0, len(definite_dict)):
-        definite_dict[i] = definite_dict[i] + (clazzDict[definite_dict[i][0]],)
-
     print(riskly_dict)
 
     #如果数目不够，就去找上面那个去借，再删除掉,避免重复
@@ -132,13 +122,23 @@ def choose_school(results, rank, kind, risk_num = 3, sure_num = 3, def_num = 4):
 
     if len(riskly_dict) < risk_num:
         for i in range(0, risk_num-len(riskly_dict)):
-            riskly_dict.append(surely_dict[i])
+            riskly_dict.append(surely_dict[-1-i])
             del surely_dict[i]
 
     if len(surely_dict) < sure_num:
         for i in range(0, sure_num-len(surely_dict)):
-            surely_dict.append(definite_dict[i])
+            surely_dict.append(definite_dict[-1-i])
             del definite_dict[i]
+
+    # 加入录取批次，加入到相应地组内，与学校对应起来
+    for i in range(0, len(riskly_dict)):
+        riskly_dict[i] = riskly_dict[i] + (clazzDict[riskly_dict[i][0]],)
+
+    for i in range(0, len(surely_dict)):
+        surely_dict[i] = surely_dict[i] + (clazzDict[surely_dict[i][0]],)
+
+    for i in range(0, len(definite_dict)):
+        definite_dict[i] = definite_dict[i] + (clazzDict[definite_dict[i][0]],)
 
     #取出所需要的三项分类个数，这里的个数也是可以设置的
     for i in range(0, risk_num):

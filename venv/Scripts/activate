@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="F:\研究生二年级\高考志愿系统\Server\Flask Server\venv"
+VIRTUAL_ENV="D:\Evaluation\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
