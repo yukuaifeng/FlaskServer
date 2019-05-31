@@ -9,6 +9,7 @@ from flaskserver.models import User,Admission,GradeLine,ControlLine,StudentNumbe
 from flaskserver.utils import redirect_back
 from sqlalchemy import text, and_
 import pysnooper
+from .classify import classify, getSchoolList
 
 #@pysnooper.snoop()
 def choose_school(results, rank, kind, risk_num, sure_num, def_num):
@@ -109,12 +110,17 @@ def choose_school(results, rank, kind, risk_num, sure_num, def_num):
     surely_dict = {k: v for k, v in schoolDict.items() if "80%" < v < "90%"}
     definite_dict = {k: v for k, v in schoolDict.items() if v > "90%"}
 
-    #然后对分组后的结果进行组内排序
+    #然后对分组后的结果进行组内排序,注意，排序后的结果，就变成了list
     riskly_dict = sorted(riskly_dict.items(), key=lambda x: x[1], reverse=True)
     surely_dict = sorted(surely_dict.items(), key=lambda x: x[1], reverse=True)
     definite_dict = sorted(definite_dict.items(), key=lambda x: x[1], reverse=True)
 
-    print(riskly_dict)
+    #交给聚类程序去参与聚类的过程
+    riskly_dict_selected = cluster(riskly_dict)
+    surely_dict_selected = cluster(surely_dict)
+    definite_dict_selected = cluster(definite_dict)
+
+    print(riskly_dict_selected, surely_dict_selected, definite_dict_selected)
 
     #如果数目不够，就去找上面那个去借，再删除掉,避免重复
     #这里的情况是因为考虑到需要借的情况多是名次比较高的情况
@@ -166,6 +172,7 @@ def choose_school(results, rank, kind, risk_num, sure_num, def_num):
     #     else:
     #         break
 
+
     return riskly_results, surely_results, definite_results
 
 #@pysnooper.snoop()
@@ -179,6 +186,7 @@ def compute_distance(ranks, rank):
     #distance = tmp/rank
     return distance
 
+
 #@pysnooper.snoop()
 def compute_variance(ranks, targets):
     #这里是要求所有的与高考的距离或者是与省控线的rank值的标准方差
@@ -190,3 +198,22 @@ def compute_variance(ranks, targets):
         variance = np.std(listtmp, ddof=1)
 #    print(variance)
     return variance
+
+#@pysnooper.snoop()
+def cluster(schoollist, n=4):
+    schoolnames = []
+    for i in range(0, len(schoollist)):
+        schoolnames.append(schoollist[i][0])
+
+    schoolList, schoolName = getSchoolList(schoolnames)
+    kind1, kind2, kind3, kind = classify(schoolList, schoolName)
+    kindlist = [kind1, kind2, kind3]
+    target = kindlist[kind]
+    school_list_selected = []
+    for s in target:
+        school = s[0]
+        for i in schoollist:
+            if i[0] == school:
+                school_list_selected.append(i)
+    return school_list_selected
+
