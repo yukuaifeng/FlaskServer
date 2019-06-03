@@ -12,7 +12,7 @@ import pysnooper
 from .classify import classify, getSchoolList
 
 #@pysnooper.snoop()
-def choose_school(results, rank, kind, risk_num, sure_num, def_num):
+def choose_school(results, rank, kind, risk_num, sure_num, def_num, timelist, num1, num2):
     #首先，循环得到的results，也就是里面的学校
     #循环体中，也就是每一个学校内，首先查询它的每一年的数据，存储在form中
     #然后进行四次运算：
@@ -115,16 +115,17 @@ def choose_school(results, rank, kind, risk_num, sure_num, def_num):
     surely_dict = sorted(surely_dict.items(), key=lambda x: x[1], reverse=True)
     definite_dict = sorted(definite_dict.items(), key=lambda x: x[1], reverse=True)
 
-    #交给聚类程序去参与聚类的过程
-    riskly_dict_selected = cluster(riskly_dict)
-    surely_dict_selected = cluster(surely_dict)
-    definite_dict_selected = cluster(definite_dict)
+    print(riskly_dict, surely_dict, definite_dict)
 
-    print(riskly_dict_selected, surely_dict_selected, definite_dict_selected)
+    #交给聚类程序去参与聚类的过程
+    riskly_dict = cluster(riskly_dict, timelist, num1, num2)
+    surely_dict = cluster(surely_dict, timelist, num1, num2)
+    definite_dict = cluster(definite_dict, timelist, num1, num2)
+
+    print(riskly_dict, surely_dict, definite_dict)
 
     #如果数目不够，就去找上面那个去借，再删除掉,避免重复
-    #这里的情况是因为考虑到需要借的情况多是名次比较高的情况
-    #所以将最接近目标的target的值借到上一个等级
+    #所以将最远离目标的target的值借到上一个等级
 
     if len(riskly_dict) < risk_num:
         for i in range(0, risk_num-len(riskly_dict)):
@@ -200,20 +201,29 @@ def compute_variance(ranks, targets):
     return variance
 
 #@pysnooper.snoop()
-def cluster(schoollist, n=4):
+def cluster(schoollist, timelist, num1,num2):
     schoolnames = []
     for i in range(0, len(schoollist)):
         schoolnames.append(schoollist[i][0])
 
-    schoolList, schoolName = getSchoolList(schoolnames)
-    kind1, kind2, kind3, kind = classify(schoolList, schoolName)
+    schoolList, schoolName = getSchoolList(schoolnames, timelist)
+    kind1, kind2, kind3, kind_num1, kind_num2 = classify(schoolList, schoolName, num1, num2)
+
+    #这里将得到的list根据分类的结果，进行分类和匹配，又将原来的学校得分重新排序起来
     kindlist = [kind1, kind2, kind3]
-    target = kindlist[kind]
+    target_1 = kindlist[kind_num1]
+    target_2 = kindlist[kind_num2]
+    kindlist.remove(target_1)
+    kindlist.remove(target_2)
+    target_3 = kindlist[0]
     school_list_selected = []
-    for s in target:
-        school = s[0]
-        for i in schoollist:
-            if i[0] == school:
-                school_list_selected.append(i)
+    target = [target_1, target_2, target_3]
+    for i in range(0, 3):
+        tar = target[i]
+        for s in tar:
+            school = s[0]
+            for m in schoollist:
+                if m[0] == school:
+                    school_list_selected.append(m)
     return school_list_selected
 

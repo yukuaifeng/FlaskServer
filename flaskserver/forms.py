@@ -26,6 +26,10 @@ class QueryForm(FlaskForm):
     risk_num = IntegerField('冲的数目', validators=[check_num])
     sure_num = IntegerField('稳的数目', validators=[check_num])
     def_num = IntegerField('保的数目', validators=[check_num])
+    element_1 = SelectField('学校素质', choices=((1, '所在城市'), (2, '综合实力'), (3, '就业率'), (4, '国家资金'),))
+    element_2 = SelectField('学校素质', choices=((1, '所在城市'), (2, '综合实力'), (3, '就业率'), (4, '国家资金'),))
+    element_3 = SelectField('学校素质', choices=((1, '所在城市'), (2, '综合实力'), (3, '就业率'), (4, '国家资金'),))
+    element_4 = SelectField('学校素质', choices=((1, '所在城市'), (2, '综合实力'), (3, '就业率'), (4, '国家资金'),))
     submit = SubmitField('查询')
 
     def validate_rank(form, field):

@@ -13,18 +13,17 @@ db = pymysql.connect("localhost", "root", "950305", "evolution")
 # 使用 cursor() 方法创建一个游标对象 cursor
 cursor = db.cursor()
 
-#sql = '''select school from grade_all where kind='理工类' and rank > 20000 group by school order by rank limit 50'''
-sql = '''select school from grade_all where kind='理工类' group by school '''
-
-schools = cursor.execute(sql)
-
-schools = cursor.fetchall()
-
-
-
-
+#此函数已经不起作用，用于之前形成学校评分表，之后直接从评分表中获取数据，不再需要每次查询
 # @pysnooper.snoop()
-def produceSchoolRank(schools):
+def produceSchoolRank():
+
+    # sql = '''select school from grade_all where kind='理工类' and rank > 20000 group by school order by rank limit 50'''
+    sql = '''select school from grade_all where kind='理工类' group by school '''
+
+    cursor.execute(sql)
+
+    schools = cursor.fetchall()
+
     schoolList = []
     schoolname = []
     for s in schools:
@@ -101,22 +100,26 @@ def produceSchoolRank(schools):
 
 # schoolList, schoolname = getSchoolList(schools)
 
-
-def getSchoolList(schools, num=0):
+#@pysnooper.snoop()
+def getSchoolList(schools, timelist):
     schoolList = []
     schoolName = []
     for school in schools:
         sql = '''select * from schoolgrade where school = '%s' ''' % school
         cursor.execute(sql)
         schoolgrade = cursor.fetchone()
+        schoolgrade = list(schoolgrade)
         schoolName.append(schoolgrade[0])
-        listtmp = schoolgrade[1:]
-        listtmp[num] = listtmp[num] * 2
+        listtmp = schoolgrade[1:5]
+
+        for i in range(0, len(timelist)):
+            listtmp[i] = listtmp[i] * timelist[i]
+
         schoolList.append(listtmp)
     return schoolList, schoolName
 
 
-def classify(schoolList, schoolname, num=0):
+def classify(schoolList, schoolname, num1, num2):
     schoolArray = np.array(schoolList)
     schoolArray.dtype = np.float64
     schoolArray = schoolArray.T
@@ -133,11 +136,14 @@ def classify(schoolList, schoolname, num=0):
     kind2 = []
     kind3 = []
 
-    targetList = []
+    targetList1 = []
+    targetList2 = []
     for row in center:
-        targetList.append(row[num])
+        targetList1.append(row[num1])
+        targetList2.append(row[num2])
 
-    kind = targetList.index(max(targetList))
+    kind_num1 = targetList1.index(max(targetList1))
+    kind_num2 = targetList2.index(max(targetList2))
 
     for i in range(0, len(schoolList)):
         if label[i] == 0:
@@ -147,6 +153,6 @@ def classify(schoolList, schoolname, num=0):
         else:
             kind3.append([schoolname[i], label[i]])
 
-    return kind1, kind2, kind3, kind
+    return kind1, kind2, kind3, kind_num1, kind_num2
 
 # kind1, kind2, kind3 = classify(schoolList, schoolname)

@@ -34,6 +34,10 @@ def query():
         risk_num = queryform.risk_num.data
         sure_num = queryform.sure_num.data
         def_num = queryform.def_num.data
+        element1 = queryform.element_1.data
+        element2 = queryform.element_2.data
+        element3 = queryform.element_3.data
+        element4 = queryform.element_4.data
 
         # sql = "SELECT * FROM grade_line where rank > :rank group by school order by rank limit 100;"
         # testresults = db.session.execute(text(sql), {"rank": rank}).fetchall()
@@ -47,7 +51,30 @@ def query():
         results = GradeLine.query.filter(GradeLine.kind == kind_tmp, GradeLine.rank > rank)\
             .group_by(GradeLine.school).order_by(GradeLine.rank).limit(50)
 
-        riskly_results, surely_results, definite_results = choose.choose_school(results, rank, kind_tmp, risk_num, sure_num, def_num)
+        ranklist = [element1, element2, element3, element4]
+        normal_ranklist = ['1', '2', '3', '4']
+        normal_timelist = [2, 1.5, 1, 0.5]
+        rankdict = dict(zip(ranklist, normal_timelist))
+        sorted_dict = map(lambda x: {x: rankdict[x]}, normal_ranklist)
+        #sorted_dict = sorted(rankdict.iteritems(), key=lambda x : {x : rankdict[x]})
+        print(sorted_dict)
+        timelist = []
+        for key in sorted_dict:
+            print(key.values())
+            for v in key.values():
+                timelist.append(v)
+
+
+        for i in range(0, len(normal_ranklist)):
+            if normal_ranklist[i] == ranklist[0]:
+                num1 = i
+            if normal_ranklist[i] == ranklist[1]:
+                num2 = i
+
+        print(timelist, num1, num2)
+
+
+        riskly_results, surely_results, definite_results = choose.choose_school(results, rank, kind_tmp, risk_num, sure_num, def_num, timelist, num1, num2)
         #print(riskly_results, surely_results, definite_results)
 
         #return redirect(url_for(".display", riskly_results=riskly_results))
