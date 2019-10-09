@@ -31,18 +31,21 @@ class User(db.Model, UserMixin):
         if User.query.filter_by(username=username).first():
             return False
 
-#院校录取名次表
+
+# 院校录取名次表
 class Admission(db.Model):
     __tablename__ = 'grade_line'
     id = db.Column(db.Integer, primary_key=True)
     school = db.Column(db.String(50))
     rank = db.Column(db.Integer)
-    year = db.Column(db.Integer) #Integer 不能像String一样加入后面的数字标志
+    year = db.Column(db.Integer)
+    # Integer 不能像String一样加入后面的数字标志
     kind = db.Column(db.String(4))
     grade = db.Column(db.Integer)
     clazz = db.Column(db.String(8))
 
-#新的所有数据的表格
+
+# 新的所有数据的表格
 class GradeLine(db.Model):
     __tablename__ = 'grade_all'
     id = db.Column(db.Integer, primary_key=True)
@@ -58,7 +61,9 @@ class GradeLine(db.Model):
     rank = db.Column(db.Integer)
     clazz = db.Column(db.String(10))
 
-#历年高考省控线及其排名
+
+
+# 历年高考省控线及其排名
 class ControlLine(db.Model):
     __tablename__ = 'control_line'
     id = db.Column(db.Integer, primary_key=True)
@@ -68,10 +73,26 @@ class ControlLine(db.Model):
     ctrl_line = db.Column(db.Integer)
     ctrl_rank = db.Column(db.Integer)
 
-#历年参加高考人数表
+
+# 历年参加高考人数表
 class StudentNumber(db.Model):
     __tablename__ = 'student_number'
     id = db.Column(db.Integer, primary_key=True)
     year = db.Column(db.Integer)
     stu_num = db.Column(db.Integer)
 
+
+# 高校信息表
+class School(db.Model):
+    __tablename__ = 'school'
+    id = db.Column(db.String(50), primary_key=True)
+    name = db.Column(db.String(50), db.ForeignKey('grade_all.school'))
+    province = db.Column(db.String(50))
+    area = db.Column(db.String(50))
+    city = db.Column(db.String(50))
+    if211 = db.Column(db.String(50))
+    if985 = db.Column(db.String(50))
+    funder = db.Column(db.String(50))
+    kind = db.Column(db.String(50))
+    manager = db.Column(db.String(50))
+    managekind = db.Column(db.String(50))

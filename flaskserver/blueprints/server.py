@@ -4,7 +4,7 @@ from flask_login import current_user
 #from flaskserver.emails import send_new_comment_email, send_new_reply_email
 from flaskserver.extensions import db
 from flaskserver.forms import LoginForm, QueryForm
-from flaskserver.models import User,Admission,GradeLine,ControlLine,StudentNumber
+from flaskserver.models import User,Admission,GradeLine,ControlLine,StudentNumber,School
 from flaskserver.utils import redirect_back
 from sqlalchemy import text, and_
 from . import choose
@@ -13,17 +13,20 @@ import pysnooper
 
 server_bp = Blueprint('server', __name__)
 
+
 @server_bp.route('/')
 def index():
     form = QueryForm()
     return render_template('server/index.html', form=form)
 
+
 @server_bp.route('/display')
 def display(riskly_results):
     return render_template('server/display.html', riskly_results=riskly_results)
 
-@server_bp.route('/query', methods=['GET','POST'])
-#@pysnooper.snoop()
+
+@server_bp.route('/query', methods=['GET', 'POST'])
+# @pysnooper.snoop()
 def query():
     queryform = QueryForm()
     if request.method == 'POST':
@@ -48,7 +51,14 @@ def query():
         if kind == '2':
             kind_tmp = "文史类"
 
-        results = GradeLine.query.filter(GradeLine.kind == kind_tmp, GradeLine.rank > rank)\
+        print(kind_tmp, rank, grade)
+
+        # 按照省份筛选
+        # results = GradeLine.query.join(School, GradeLine.school == School.name).filter\
+        #     (School.province == '湖南').filter(GradeLine.kind == kind_tmp, GradeLine.rank > rank)\
+        #     .group_by(GradeLine.school).order_by(GradeLine.rank).limit(50)
+
+        results = GradeLine.query.filter(GradeLine.kind == kind_tmp, GradeLine.rank > rank) \
             .group_by(GradeLine.school).order_by(GradeLine.rank).limit(50)
 
         ranklist = [element1, element2, element3, element4]
@@ -56,14 +66,13 @@ def query():
         normal_timelist = [2, 1.5, 1, 0.5]
         rankdict = dict(zip(ranklist, normal_timelist))
         sorted_dict = map(lambda x: {x: rankdict[x]}, normal_ranklist)
-        #sorted_dict = sorted(rankdict.iteritems(), key=lambda x : {x : rankdict[x]})
+        # sorted_dict = sorted(rankdict.iteritems(), key=lambda x : {x : rankdict[x]})
         print(sorted_dict)
         timelist = []
         for key in sorted_dict:
             print(key.values())
             for v in key.values():
                 timelist.append(v)
-
 
         for i in range(0, len(normal_ranklist)):
             if normal_ranklist[i] == ranklist[0]:
@@ -73,12 +82,14 @@ def query():
 
         print(timelist, num1, num2)
 
+        riskly_results, surely_results, definite_results = choose.choose_school(results, rank, kind_tmp, risk_num,
+                                                                                sure_num, def_num, grade, timelist,
+                                                                                num1, num2)
+        # print(riskly_results, surely_results, definite_results)
 
-        riskly_results, surely_results, definite_results = choose.choose_school(results, rank, kind_tmp, risk_num, sure_num, def_num, timelist, num1, num2)
-        #print(riskly_results, surely_results, definite_results)
-
-        #return redirect(url_for(".display", riskly_results=riskly_results))
-        return render_template('server/display.html', riskly_results=riskly_results, surely_results=surely_results, definite_results=definite_results)
+        # return redirect(url_for(".display", riskly_results=riskly_results))
+        return render_template('server/display.html', riskly_results=riskly_results, surely_results=surely_results,
+                               definite_results=definite_results)
 
     return render_template('server/index.html', form=queryform)
 
